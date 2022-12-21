@@ -3,14 +3,6 @@ const { Schema } = mongoose;
 
 const ContactSchema = new Schema(
   {
-    uuid: {
-      type: String,
-      trim: true,
-      required: true,
-      unique: true,
-      index: true,
-      required: true,
-    },
     name: {
       type: String,
       trim: true,
@@ -21,20 +13,17 @@ const ContactSchema = new Schema(
       type: String,
       trim: true,
       required: true,
-      unique: true,
     },
     email: {
       type: String,
       trim: true,
       required: true,
-      unique: true,
     },
-    linkedin_url: {
+    "linkedin profile url": {
       type: String,
       trim: true,
       required: true,
       default: "",
-      unique: true,
     },
   },
   { timestamps: { createdAt: "created_at" } },

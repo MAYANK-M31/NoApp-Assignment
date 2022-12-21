@@ -21,27 +21,25 @@ router.post("/", AuthenticateToken, async (req, res) => {
     fs.renameSync(file.tempFilePath, file.tempFilePath + ".csv");
     var filename = file.tempFilePath.split("/");
     filename = filename[filename.length - 1];
-
     const path = "./tmp/" + filename + ".csv";
+    
 
     const data = await ReadCSV(path);
-
     if (data?.status !== 200)
       return Error(res, data?.message, data?.status, data?.data);
 
-    const contactsData = data?.data?.map((x) => new contacts(x));
     contacts
-      .bulkSave(contactsData)
+      .bulkSave(data?.data)
       .then(() => {
         RemoveFile(path);
         return Success(res, "CSV Data saved Successfully", data?.data);
       })
       .catch((err) => {
+        console.log(err);
         RemoveFile(path);
         return Error(res, "Something went wrong", undefined, err);
       });
 
-    // return Success(res);
   } catch (err) {
     console.log(err);
     RemoveFile(path);

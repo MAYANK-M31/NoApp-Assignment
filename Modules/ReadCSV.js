@@ -4,6 +4,7 @@ const fs = require("fs");
 const csv = require("csv-parser");
 const Joi = require("joi");
 const { RemoveFile } = require("./tool");
+const contacts = require("../Modals/contacts");
 
 const ReadCSV = (path) => {
   var result = [];
@@ -33,7 +34,7 @@ const ReadCSV = (path) => {
             );
 
             if (failed.length == 0) {
-              resolve({ data, status: 200 });
+              resolve({ data:data?.map((x) => new contacts(x)), status: 200 });
             } else {
               RemoveFile(path);
               resolve({ data: failed, status: 401, message: "Error in CSV" });

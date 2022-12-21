@@ -33,7 +33,7 @@ router.post("/createaccount", async (req, res) => {
 
       //Generating Unique User Id
       const UID = uuidv4();
-      console.log(UID, HashPassword);
+
       const adminData = new admin({
         uuid: UID,
         email: value?.email,
@@ -42,9 +42,10 @@ router.post("/createaccount", async (req, res) => {
       adminData
         .save()
         .then(() => {
-          return Success(res, "User account created successfully", value);
+          return Success(res, "User account created successfully");
         })
         .catch((err) => {
+          console.log(err);
           return Error(res, "Something went wrong", undefined, err);
         });
     });

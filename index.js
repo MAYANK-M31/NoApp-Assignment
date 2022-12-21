@@ -2,6 +2,8 @@ const express = require("express");
 const App = express();
 const mongoose = require("mongoose");
 var bodyParser = require("body-parser");
+const fileupload = require("express-fileupload");
+
 
 const { PORT } = require("./config");
 
@@ -9,6 +11,8 @@ require("dotenv").config();
 const cors = require("cors");
 App.use(bodyParser.json({ limit: "200mb" }));
 App.use(bodyParser.urlencoded());
+App.use(fileupload({ useTempFiles: true,preserveExtension:true }));
+
 
 App.use(cors());
 

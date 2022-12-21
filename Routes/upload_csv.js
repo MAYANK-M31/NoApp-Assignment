@@ -1,6 +1,6 @@
 const express = require("express");
 const fs = require("fs");
-const {Worker} = require("worker_threads")
+const { Worker } = require("worker_threads");
 const { AuthenticateToken } = require("../Middlewares/AuthenticateToken");
 const router = express.Router();
 const contact = require("../Modals/contacts");
@@ -23,7 +23,6 @@ router.post("/", AuthenticateToken, async (req, res) => {
     filename = filename[filename.length - 1];
     const path = "./tmp/" + filename + ".csv";
 
-
     // WORKER SERVICE
     const ReadCSV_Service_Worker = new Worker("./Workers/ReadCSV.js");
 
@@ -33,8 +32,8 @@ router.post("/", AuthenticateToken, async (req, res) => {
       console.log(data);
       if (data?.status !== 200)
         return Error(res, data?.message, data?.status, data?.data);
-      
-      const contactdata = data?.data?.map((x) => new contacts(x))
+
+      const contactdata = data?.data?.map((x) => new contacts(x));
 
       contacts
         .bulkSave(contactdata)

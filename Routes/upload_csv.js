@@ -1,11 +1,11 @@
 const express = require("express");
 const fs = require("fs");
-const { uuid } = require("uuidv4");
+const {Worker} = require("worker_threads")
 const { AuthenticateToken } = require("../Middlewares/AuthenticateToken");
 const router = express.Router();
 const contact = require("../Modals/contacts");
 const { Error, Success } = require("../Modules/Response");
-const { ReadCSV } = require("../Modules/ReadCSV");
+
 const { RemoveFile } = require("../Modules/tool");
 const contacts = require("../Modals/contacts");
 
@@ -22,24 +22,32 @@ router.post("/", AuthenticateToken, async (req, res) => {
     var filename = file.tempFilePath.split("/");
     filename = filename[filename.length - 1];
     const path = "./tmp/" + filename + ".csv";
-    
 
-    const data = await ReadCSV(path);
-    if (data?.status !== 200)
-      return Error(res, data?.message, data?.status, data?.data);
 
-    contacts
-      .bulkSave(data?.data)
-      .then(() => {
-        RemoveFile(path);
-        return Success(res, "CSV Data saved Successfully", data?.data);
-      })
-      .catch((err) => {
-        console.log(err);
-        RemoveFile(path);
-        return Error(res, "Something went wrong", undefined, err);
-      });
+    // WORKER SERVICE
+    const ReadCSV_Service_Worker = new Worker("./Workers/ReadCSV.js");
 
+    ReadCSV_Service_Worker.postMessage(path);
+
+    ReadCSV_Service_Worker.on("message", (data) => {
+      console.log(data);
+      if (data?.status !== 200)
+        return Error(res, data?.message, data?.status, data?.data);
+      
+      const contactdata = data?.data?.map((x) => new contacts(x))
+
+      contacts
+        .bulkSave(contactdata)
+        .then(() => {
+          RemoveFile(path);
+          return Success(res, "CSV Data saved Successfully", data?.data);
+        })
+        .catch((err) => {
+          console.log(err);
+          RemoveFile(path);
+          return Error(res, "Something went wrong", undefined, err);
+        });
+    });
   } catch (err) {
     console.log(err);
     RemoveFile(path);

@@ -29,7 +29,6 @@ db.once("open", () => console.log("connected to database"));
 // ROUTES
 const SignIn = require("./Routes/signin")
 const UploadCSV = require("./Routes/upload_csv");
-const { ReadCSV } = require("./Modules/ReadCSV");
 
 App.use("/signin",SignIn)
 App.use("/upload",UploadCSV)
@@ -41,7 +40,6 @@ App.get("/", (req, res) => {
 
 App.listen(PORT, async() => {
   console.log("Server started on port", PORT);
-//  console.log(await ReadCSV("./tmp/test.cssv"))
 });
 
 

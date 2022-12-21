@@ -3,7 +3,7 @@ const { parentPort } = require("worker_threads");
 const fs = require("fs");
 const csv = require("csv-parser");
 const Joi = require("joi");
-const { RemoveFile } = require("./tool");
+const { RemoveFile } = require("../Modules/tool");
 const contacts = require("../Modals/contacts");
 
 const ReadCSV = (path) => {
@@ -34,7 +34,7 @@ const ReadCSV = (path) => {
             );
 
             if (failed.length == 0) {
-              resolve({ data:data?.map((x) => new contacts(x)), status: 200 });
+              resolve({ data, status: 200 });
             } else {
               RemoveFile(path);
               resolve({ data: failed, status: 401, message: "Error in CSV" });
@@ -55,4 +55,9 @@ const schema = Joi.object().keys({
   "linkedin profile url": Joi.string().uri().trim().required(),
 });
 
-module.exports = { ReadCSV };
+parentPort.on("message", async (path) => {
+  // ReadCSV(path)
+  parentPort.postMessage(await ReadCSV(path));
+});
+
+// module.exports = { ReadCSV };
